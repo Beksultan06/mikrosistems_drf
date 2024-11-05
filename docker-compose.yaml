@@ -1,0 +1,29 @@
+version: '3'
+services:
+  auth_service:
+    build: ./src/auth
+    ports:
+      - "8000:8000"
+    networks:
+      - app-network
+    command: >
+      sh -c "python manage.py makemigrations base &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+
+  product_service:
+    build: ./src/product
+    ports:
+      - "8001:8000"
+    networks:
+      - app-network
+    depends_on:
+      - auth_service
+    command: >
+      sh -c "python manage.py makemigrations product &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
+
+networks:
+  app-network:
+    driver: bridge
